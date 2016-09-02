@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>podneko.png</file>
+    </qresource>
+</RCC>

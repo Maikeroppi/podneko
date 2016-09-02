@@ -27,14 +27,14 @@
       <item>
        <widget class="QLineEdit" name="feedUrl">
         <property name="text">
-         <string>http://feeds.feedburner.com/thetimferrissshow </string>
+         <string>http://feeds.ign.com/ignfeeds/podcasts/beyond/ </string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="grabFeed">
         <property name="text">
-         <string>Get</string>
+         <string>Grab</string>
         </property>
        </widget>
       </item>
@@ -48,7 +48,11 @@
      </widget>
     </item>
     <item>
-     <widget class="QTreeView" name="dataTree"/>
+     <widget class="QTreeView" name="feedTree">
+      <property name="uniformRowHeights">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
