@@ -48,4 +48,6 @@ Temporary Items
 
 # Ignore Cmake generated build directories
 Build
+CmakeLists.txt.user*
+CmakeLists.txt.user
 CmakeLists.txt.user

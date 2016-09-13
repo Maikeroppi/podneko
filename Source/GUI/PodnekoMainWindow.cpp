@@ -38,20 +38,35 @@ PodnekoMainWindow::PodnekoMainWindow(QWidget *parent)
 
     setWindowIcon(QIcon(":/podneko.png"));
 
+    auto setHorizontalHeader = [=]()
+    {
+        m_feedModel->setHorizontalHeaderLabels({"Title", "Description", "Podcast URL", "GUID", "Publication Date"});
+    };
+    setHorizontalHeader();
+
     connect(ui->grabFeed, &QPushButton::clicked, [=]()
     {
-        QUrl feedUrl(ui->feedUrl->text());
-        if(feedUrl.isValid())
+        m_feedModel->clear();
+        setHorizontalHeader();
+
+        auto itemCount = ui->feedsList->count();
+        for(auto currentRow = 0; currentRow < itemCount; ++currentRow)
         {
-            QNetworkRequest request;
-            request.setUrl(feedUrl);
-            request.setHeader(QNetworkRequest::ContentTypeHeader, "application/rss+xml");
-            auto reply = m_networkManager->get(request);
-            connect(reply, &QNetworkReply::finished, this, &PodnekoMainWindow::handleReply);
-            showStatusMessage(QString("Requesting: %1...").arg(feedUrl.toString()));
+            auto* item = ui->feedsList->item(currentRow);
+            auto urlText = item->text();
+            QUrl feedUrl(urlText);
+            if(feedUrl.isValid())
+            {
+                QNetworkRequest request;
+                request.setUrl(feedUrl);
+                request.setHeader(QNetworkRequest::ContentTypeHeader, "application/rss+xml");
+                auto reply = m_networkManager->get(request);
+                connect(reply, &QNetworkReply::finished, this, &PodnekoMainWindow::handleReply);
+                showStatusMessage(QString("Requesting: %1...").arg(feedUrl.toString()));
+            }
+            else
+                showStatusMessage(QString("Feed URL is invalid: %1").arg(urlText));
         }
-        else
-            showStatusMessage(QString("Feed URL is invalid: %1").arg(ui->feedUrl->text()));
     });
 }
 

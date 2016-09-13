@@ -6,39 +6,35 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>556</width>
-    <height>450</height>
+    <width>564</width>
+    <height>610</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Podneko v0.001 Pre-Alpha</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="1,2,1,10,1">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <widget class="QLabel" name="feedsLabel">
+      <property name="text">
+       <string>Feeds:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QListWidget" name="feedsList">
       <item>
-       <widget class="QLabel" name="feedLabel">
-        <property name="text">
-         <string>Feed URL:</string>
-        </property>
-       </widget>
+       <property name="text">
+        <string>http://feeds.ign.com/ignfeeds/podcasts/beyond/</string>
+       </property>
       </item>
       <item>
-       <widget class="QLineEdit" name="feedUrl">
-        <property name="text">
-         <string>http://feeds.ign.com/ignfeeds/podcasts/beyond/ </string>
-        </property>
-       </widget>
+       <property name="text">
+        <string>http://wtfpod.libsyn.com/rss</string>
+       </property>
       </item>
-      <item>
-       <widget class="QPushButton" name="grabFeed">
-        <property name="text">
-         <string>Grab</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     </widget>
     </item>
     <item>
      <widget class="QLabel" name="feedData">
@@ -54,6 +50,30 @@
       </property>
      </widget>
     </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="grabFeed">
+        <property name="text">
+         <string>Refresh Feeds</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -61,7 +81,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>556</width>
+     <width>564</width>
      <height>20</height>
     </rect>
    </property>
