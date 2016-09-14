@@ -6,12 +6,7 @@
 #include <QXmlStreamReader>
 #include <QTextStream>
 
-
-static const int kTitleColumn = 0;
-static const int kDescriptionColumn = 1;
-static const int kLinkColumn = 2;
-static const int kGuidColumn = 3;
-static const int kPubDataColumn = 4;
+#include "../RSSStreamParser.h"
 
 PodnekoMainWindow::PodnekoMainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -29,11 +24,11 @@ PodnekoMainWindow::PodnekoMainWindow(QWidget *parent)
     };
 
     // Set default header data for model
-    initHeaderItem(kTitleColumn,        "Title");
-    initHeaderItem(kDescriptionColumn,  "Description");
-    initHeaderItem(kLinkColumn,         "Link");
-    initHeaderItem(kGuidColumn,         "GUID");
-    initHeaderItem(kPubDataColumn,      "Publication Date");
+    initHeaderItem(RSSStreamParser::kTitleColumn,        "Title");
+    initHeaderItem(RSSStreamParser::kDescriptionColumn,  "Description");
+    initHeaderItem(RSSStreamParser::kLinkColumn,         "Link");
+    initHeaderItem(RSSStreamParser::kGuidColumn,         "GUID");
+    initHeaderItem(RSSStreamParser::kPubDataColumn,      "Publication Date");
     ui->feedTree->setModel(m_feedModel);
 
     setWindowIcon(QIcon(":/podneko.png"));
@@ -109,7 +104,7 @@ void PodnekoMainWindow::handleReply()
         }
 
         QXmlStreamReader xmlStream(replyAsBytes);
-
+        RSSStreamParser streamParser;
         QModelIndex parentIndex;
 
         while(!xmlStream.atEnd())
@@ -121,78 +116,14 @@ void PodnekoMainWindow::handleReply()
                 {
                     // Reset index to invalid in case something fails to parse
                     parentIndex = QModelIndex();
-                    readRSSChannelDataToModel(xmlStream, parentIndex);
+                    auto item = streamParser.readRSSChannelDataToModel(xmlStream);
+                    m_feedModel->appendRow(item);
                 }
             }
         }
 
-        ui->feedTree->resizeColumnToContents(kTitleColumn);
+        ui->feedTree->resizeColumnToContents(RSSStreamParser::kTitleColumn);
     }
     else
         showStatusMessage("Invalid reply connected to handleReply!");
-}
-
-void PodnekoMainWindow::readRSSChannelDataToModel(QXmlStreamReader& reader, QModelIndex& createdIndex)
-{
-    QStandardItem* parentItem = nullptr;
-    while(!reader.atEnd() && reader.readNextStartElement())
-    {
-        if(reader.name() == QLatin1Literal("title"))
-        {
-            parentItem = new QStandardItem(reader.readElementText());
-            m_feedModel->appendRow(parentItem);
-            createdIndex = m_feedModel->indexFromItem(parentItem);
-        }
-        else if(reader.name() == QLatin1Literal("item"))
-            readRSSItemDataToModel(reader, parentItem);
-        else
-            reader.skipCurrentElement();
-    }
-}
-
-// Example RSS entry from Wikipedia
-//<item>
-// <title>Example entry</title>
-// <description>Here is some text containing an interesting description.</description>
-// <link>http://www.example.com/blog/post/1</link>
-// <guid isPermaLink="true">7bd204c6-1655-4c27-aeee-53f933c5395f</guid>
-// <pubDate>Sun, 06 Sep 2009 16:20:00 +0000</pubDate>
-//</item>
-void PodnekoMainWindow::readRSSItemDataToModel(QXmlStreamReader& reader, QStandardItem* parentItem)
-{
-    static QMap<QString, int> s_nameToColumn =
-    {
-        {"title", kTitleColumn},
-        {"description", kDescriptionColumn},
-        {"link", kLinkColumn},
-        {"guid", kGuidColumn},
-        {"pubDate", kPubDataColumn}
-    };
-    static int s_expectedColumns = s_nameToColumn.size();
-    bool parsingItem = true;
-
-    QList<QStandardItem*> items;
-    for(int i = 0; i < s_expectedColumns; ++i)
-    {
-        items.push_back(new QStandardItem());
-    }
-
-    QString name;
-    while(!reader.atEnd() && parsingItem)
-    {
-        auto tokenType = reader.readNext();
-        auto name = reader.name().toString();
-        if(tokenType == QXmlStreamReader::StartElement && s_nameToColumn.contains(name))
-        {
-            int columnPos = s_nameToColumn.value(name);
-            items[columnPos]->setText(reader.readElementText());
-        }
-        else if(tokenType == QXmlStreamReader::EndElement && name == QLatin1Literal("item"))
-            parsingItem = false;
-    }
-
-    if(parentItem)
-        parentItem->appendRow(items);
-    else
-        qDeleteAll(items);
 }

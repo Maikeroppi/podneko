@@ -25,9 +25,6 @@ public:
     void handleReply();
 
 private:
-    void readRSSChannelDataToModel(QXmlStreamReader& reader, QModelIndex& createdIndex);
-    void readRSSItemDataToModel(QXmlStreamReader& reader, QStandardItem* parentItem);
-
     Ui::PodnekoMainWindow *ui;
     QNetworkAccessManager* m_networkManager;
     QStandardItemModel* m_feedModel;
