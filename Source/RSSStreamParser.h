@@ -5,24 +5,26 @@
 #include <QStandardItemModel>
 #include <QXmlStreamReader>
 
-class RSSStreamParser : public QObject
+class RssStreamParser : public QObject
 {
     Q_OBJECT
 public:
-    explicit RSSStreamParser(QObject *parent = 0);
+    explicit RssStreamParser(QObject *parent = 0);
 
-    static const int kTitleColumn = 0;
-    static const int kDescriptionColumn = 1;
-    static const int kLinkColumn = 2;
-    static const int kGuidColumn = 3;
-    static const int kPubDataColumn = 4;
-
-    QStandardItem* readRSSChannelDataToModel(QXmlStreamReader& reader);
-    void readRSSItemDataToModel(QXmlStreamReader& reader, QStandardItem* parentItem);
+    void parseStreamData(const QByteArray& data);
 
 signals:
+    void channelFound(const QMap<QString, QString>& channelInfo);
+    void itemFound(const QMap<QString, QString>& episodeInfo);
+    void parseFinished();
 
 public slots:
+
+protected:
+    void parseRssChannelData();
+    void parseRssItemData();
+
+    QXmlStreamReader m_streamReader;
 };
 
 #endif // RSSSTREAMPARSER_H
